@@ -1,13 +1,34 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { ScrapingService } from './scraping.service'; // Importar el servicio
+import { CommonModule } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
+  styleUrls: ['./app.component.css'],
+  imports: [ FormsModule,CommonModule], // Importar módulos necesarios
 })
 export class AppComponent {
-  title = 'scraping_pagina_dian';
+  title = 'scraping-pagina-dian';
+  number: string = '';
+  result: any = null;
+  errorMessage: string = '';
+
+  constructor(private scrapingService: ScrapingService) {}
+
+  onSubmit() {
+    this.scrapingService.scrapeNIT(this.number).subscribe({
+      next: (data) => {
+        this.result = data;
+        this.errorMessage = '';
+      },
+      error: (error) => {
+        this.errorMessage = 'Error al hacer scraping: ' + error.message;
+        this.result = null;
+      },
+    });
+  }
 }
